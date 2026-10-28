@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val tempPw: String = "123456"
+
         val button = findViewById<Button>(R.id.login)
         val pwInput = findViewById<EditText>(R.id.passwordInput)
         val settings = getSharedPreferences("app_settings", MODE_PRIVATE)

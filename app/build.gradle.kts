@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -34,6 +36,11 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.core.ktx)

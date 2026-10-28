@@ -12,14 +12,32 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlin.data.MedDB
+import com.example.kotlin.data.MedicineHistory
+import kotlinx.coroutines.launch
 
 class ListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_list)
+        //DB
+        val database = MedDB.getDatabase(this)
+        val medDao = database.medDao()
+        val historyDao = database.historyDao()
+
+        lifecycleScope.launch {
+            medDao.getAllMed().collect { medicines ->
+                println(medicines)
+            }
+            historyDao.getAllHistory().collect { histories ->
+                println(histories)
+            }
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -31,13 +49,31 @@ class ListActivity : AppCompatActivity() {
         supportActionBar?.title = ""
 
         val recycle = findViewById<RecyclerView>(R.id.recycle)
-        //test data
-        val stringArray = arrayOf("med1", "2", "3", "4")
-        val intArray = arrayOf(100, 200, 300, 400)
-        //end of test data
-        val adapter = Adaptor(this, stringArray, intArray)
+        val adapter = Adaptor(this, emptyList())
+        adapter.setTakenClickListener { medicine ->
+
+            val history = MedicineHistory(
+                med_id = medicine.id,
+                takenAt = System.currentTimeMillis()
+            )
+
+            lifecycleScope.launch {
+                historyDao.insertHistory(history)
+            }
+        }
         recycle?.adapter = adapter
         recycle?.layoutManager = LinearLayoutManager(this)
+
+        lifecycleScope.launch {
+            medDao.getAllMed().collect { medicines ->
+                adapter.updateData(medicines)
+            }
+        }
+        lifecycleScope.launch {
+            historyDao.getLatestHistory().collect { historyList ->
+                adapter.updateLatestHistory(historyList)
+            }
+        }
 
         adapter.setItemClickListener(object : OnRecyclerViewClickListener {
             override fun OnItemClickListener(v: View) {
