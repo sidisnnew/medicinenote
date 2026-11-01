@@ -1,6 +1,9 @@
 package com.example.kotlin
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -8,8 +11,11 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +26,15 @@ import com.example.kotlin.data.MedicineHistory
 import kotlinx.coroutines.launch
 
 class ListActivity : AppCompatActivity() {
+    private val requestNotificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        isGranted ->
+        if(isGranted){
+            println("Granted")
+        } else {
+            println("Denied")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -29,12 +44,16 @@ class ListActivity : AppCompatActivity() {
         val medDao = database.medDao()
         val historyDao = database.historyDao()
 
-        lifecycleScope.launch {
-            medDao.getAllMed().collect { medicines ->
-                println(medicines)
-            }
-            historyDao.getAllHistory().collect { histories ->
-                println(histories)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestNotificationPermission.launch(
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
             }
         }
 
@@ -59,8 +78,10 @@ class ListActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 historyDao.insertHistory(history)
+                ReminderScheduler.scheduleReminder(this@ListActivity, medicine.id, medicine.medName)
             }
         }
+
         recycle?.adapter = adapter
         recycle?.layoutManager = LinearLayoutManager(this)
 
@@ -78,6 +99,11 @@ class ListActivity : AppCompatActivity() {
         adapter.setItemClickListener(object : OnRecyclerViewClickListener {
             override fun OnItemClickListener(v: View) {
                 val position: Int = recycle!!.getChildAdapterPosition(v)
+                val id = adapter.mData[position].id
+                val intent = Intent(this@ListActivity, HistoryActivity::class.java)
+                intent.putExtra("id", id)
+                startActivity(intent)
+
                 Toast.makeText(this@ListActivity, "position $position", Toast.LENGTH_SHORT).show()
             }
         })

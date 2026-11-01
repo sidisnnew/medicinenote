@@ -12,6 +12,9 @@ interface MedDao {
     @Query("SELECT * FROM med_table")
     fun getAllMed(): Flow<List<Medicine>>
 
+    @Query("SELECT name FROM med_table WHERE id = :medId")
+    suspend fun getName(medId: Int): String
+
     @Insert
     suspend fun insertMed(medicine: Medicine)
 

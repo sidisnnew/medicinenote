@@ -19,6 +19,9 @@ interface HistoryDao {
         """)
     fun getLatestHistory(): Flow<List<LatestHistory>>
 
+    @Query("SELECT taken_at FROM history_table WHERE medicine_id = :medId")
+    fun getMedHistory(medId: Int): Flow<List<Long>>
+
     @Insert
     suspend fun insertHistory(history: MedicineHistory)
 
