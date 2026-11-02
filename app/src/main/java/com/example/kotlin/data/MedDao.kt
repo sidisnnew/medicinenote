@@ -15,6 +15,9 @@ interface MedDao {
     @Query("SELECT name FROM med_table WHERE id = :medId")
     suspend fun getName(medId: Int): String
 
+    @Query("DELETE FROM med_table WHERE id = :medId")
+    suspend fun deleteById(medId: Int)
+
     @Insert
     suspend fun insertMed(medicine: Medicine)
 

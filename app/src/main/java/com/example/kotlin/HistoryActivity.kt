@@ -2,6 +2,7 @@ package com.example.kotlin
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,7 @@ class HistoryActivity : AppCompatActivity() {
 
         val medName = findViewById<TextView>(R.id.medName)
         val medHistory = findViewById<TextView>(R.id.history)
+        val deleteBtn = findViewById<Button>(R.id.deleteBtn)
         val id = intent.getIntExtra("id", 0)
 
         lifecycleScope.launch {
@@ -44,6 +46,13 @@ class HistoryActivity : AppCompatActivity() {
                 }
                 medHistory.text = result
             }
+        }
+
+        deleteBtn.setOnClickListener {
+            lifecycleScope.launch {
+                medDao.deleteById(id)
+            }
+            finish()
         }
     }
 }

@@ -34,7 +34,8 @@ class SettingActivity : AppCompatActivity() {
             settings.edit().putString("password", pw.text.toString())
                 .putBoolean("password_enabled", pwSwitch.isChecked)
                 .apply()
-            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.configuration_saved, Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }
