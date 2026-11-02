@@ -4,7 +4,9 @@ import android.Manifest
 import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
@@ -37,6 +39,8 @@ object NotificationHelper {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showNotification(context: Context, medicineId: Int, medicineName: String) {
         createNotificationChannel(context)
+        val intent = Intent(context, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, medicineId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context,CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_dialog_info)
@@ -44,8 +48,11 @@ object NotificationHelper {
             .setContentText("$medicineName Over 24 hours had not taken")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
             .build()
 
         NotificationManagerCompat.from(context).notify(medicineId, notification)
+
+
     }
 }

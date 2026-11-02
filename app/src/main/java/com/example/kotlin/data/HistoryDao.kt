@@ -19,7 +19,7 @@ interface HistoryDao {
         """)
     fun getLatestHistory(): Flow<List<LatestHistory>>
 
-    @Query("SELECT taken_at FROM history_table WHERE medicine_id = :medId")
+    @Query("SELECT taken_at FROM history_table WHERE medicine_id = :medId ORDER BY taken_at DESC")
     fun getMedHistory(medId: Int): Flow<List<Long>>
 
     @Insert

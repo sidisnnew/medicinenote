@@ -29,12 +29,14 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed({
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
-            }, 3000L)
+                finish()
+            }, 1500L)
         } else {
             handler.postDelayed({
                 val intent = Intent(this, ListActivity::class.java)
                 startActivity(intent)
-            }, 3000L)
+                finish()
+            }, 1500L)
         }
 
 

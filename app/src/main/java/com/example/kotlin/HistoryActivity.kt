@@ -10,6 +10,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.kotlin.data.MedDB
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +38,11 @@ class HistoryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             medName.text = medDao.getName(id)
             historyDao.getMedHistory(id).collect {histories ->
-                medHistory.text = histories.toString()
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val result = histories.joinToString(separator = "\n") { time ->
+                    dateFormat.format(Date(time))
+                }
+                medHistory.text = result
             }
         }
     }
