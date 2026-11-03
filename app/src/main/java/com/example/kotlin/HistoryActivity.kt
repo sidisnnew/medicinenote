@@ -3,8 +3,10 @@ package com.example.kotlin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -34,7 +36,8 @@ class HistoryActivity : AppCompatActivity() {
 
         val medName = findViewById<TextView>(R.id.medName)
         val medHistory = findViewById<TextView>(R.id.history)
-        val deleteBtn = findViewById<Button>(R.id.deleteBtn)
+        val deleteBtn = findViewById<ImageButton>(R.id.deleteBtn)
+        val editBtn = findViewById<ImageButton>(R.id.editBtn)
         val id = intent.getIntExtra("id", 0)
 
         lifecycleScope.launch {
@@ -49,10 +52,28 @@ class HistoryActivity : AppCompatActivity() {
         }
 
         deleteBtn.setOnClickListener {
-            lifecycleScope.launch {
-                medDao.deleteById(id)
-            }
-            finish()
+            AlertDialog.Builder(this).setTitle("Delete").setMessage("Confirm?").setPositiveButton("Delete"){dialog, which ->
+                lifecycleScope.launch {
+                    medDao.deleteById(id)
+                }
+                finish()
+            }.setNegativeButton("Cancel", null).show()
+        }
+
+        editBtn.setOnClickListener {
+            val intent = Intent(this, EditActivity::class.java)
+            intent.putExtra("id", id)
+            startActivity(intent)
+        }
+    }
+    override fun onResume(){
+        super.onResume()
+        val database = MedDB.getDatabase(this)
+        val medDao = database.medDao()
+        val medName = findViewById<TextView>(R.id.medName)
+        val id = intent.getIntExtra("id", 0)
+        lifecycleScope.launch {
+            medName.setText(medDao.getName(id))
         }
     }
 }

@@ -50,13 +50,26 @@
 
     </ScrollView>
 
-    <Button
+    <ImageButton
         android:id="@+id/deleteBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="15dp" />
+        android:layout_margin="15dp"
+        app:srcCompat="@drawable/delete_logo"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+    <ImageButton
+        android:id="@+id/editBtn"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/medName"
+        app:layout_constraintStart_toEndOf="@+id/medName"
+        app:layout_constraintTop_toTopOf="@+id/medName"
+        android:scaleType="fitCenter"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/edit_logo" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
